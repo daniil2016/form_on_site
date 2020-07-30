@@ -1,0 +1,6 @@
+name = Web Form
+description = This module installs a feedback form on the site.
+core = 7.x
+package = Other
+dependencies[] = jquery_update:jquery_update
+scripts[] = js/script.js

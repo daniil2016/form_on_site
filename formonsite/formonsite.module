@@ -1,0 +1,219 @@
+<?php
+
+// CSS connection
+
+function formonsite_preprocess_html(&$variables) {
+  drupal_add_css(drupal_get_path('module', 'formonsite') . '/css/styles.css');
+}
+
+// Administration form on site
+
+function formonsite_menu() {
+
+	$items = array();
+
+	$items['admin/settings/feedback'] = array(
+		'title' => 'Форма обратной связи',
+		'description' => 'Настройки для формы обратной связи',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('formonsite_admin'),	
+		'access arguments' => array('access administration pages'),
+		'type' => MENU_NORMAL_ITEM,
+		'weight' => 8
+	);
+	return $items;
+}
+function formonsite_admin(){
+
+	$form = array();
+	
+
+	$form['feedback'] = array(
+		'#type' => 'fieldset',
+		'#title' => "Настройки формы:",
+	);
+    $form['feedback']['markup'] = [
+    	 '#markup' => t('После настройки формы, зайдите в блоки и разместите в нужном контейнере блок "Форма обратной связи". После этого форма будет открываться при нажатии на блок с классом "pop". Пример: &lt;a class="pop"&gt;Заказать звонок&lt;/a&gt;.'),
+    ];
+    $form['feedback']['feedback_mail'] = array(
+    	'#type' => 'textfield',
+    	'#default_value' => variable_get('feedback_mail'),
+    	'#required' => TRUE,
+    	'#attributes' => array(
+            'placeholder' => '* Почта для сообщений',
+        ),
+    	'#description' => t('Необходимо указать почту, на которую будут приходить сообщения.'),
+    );
+	$form['feedback']['feedback_title'] = array(
+    	'#type' => 'textfield',
+    	'#default_value' => variable_get('feedback_title'),
+    	'#attributes' => array(
+            'placeholder' => 'Заголовок формы',
+        ),
+    	'#description' => t('Заголовок, который будет показан в форме. Если ничего не указывать, то заголовок будет: <b>"Заказать обратный звонок"</b>'),
+    );
+    $form['feedback']['feedback_desc'] = array(
+    	'#type' => 'textfield',
+    	'#default_value' => variable_get('feedback_desc'),
+    	'#attributes' => array(
+            'placeholder' => 'Подпись под заголовком',
+        ),
+    	'#description' => t('Текст, который будет размещен под заголовком. Если ничего не указывать, то текст будет: <b>"Наш специалист свяжется с вами в ближайшее время"</b>'),
+    );
+    $form['feedback']['feedback_button'] = array(
+    	'#type' => 'textfield',
+    	'#default_value' => variable_get('feedback_button'),
+    	'#attributes' => array(
+            'placeholder' => 'Цвет для формы',
+        ),
+    	'#description' => t('Цвет, который будет использован в форме. Если ничего не указывать цвет будет <b>#082de8</b>.'),
+    );
+    
+	return system_settings_form($form);
+}
+
+// Form on site
+function formonsite_block_info() {
+  $blocks['block1'] = array(
+    'info' => t('Форма обратной связи'),
+  );
+  return $blocks;
+}
+
+function formonsite_block_view($delta = '') {
+    $block = array();
+    $block['subject'] = t('');
+    $block['content'] = drupal_get_form('formonsite_form');
+  return $block;
+}
+
+function formonsite_form($form, &$form_state) {
+    $form_title = variable_get('feedback_title');
+    $form_title = $form_title == '' ? 'Заказать обратный звонок' : $form_title;
+    $form_desc = variable_get('feedback_desc');
+    $form_desc = $form_desc == '' ? 'Наш специалист свяжется с вами в ближайшее время' : $form_desc;
+    $button_color = variable_get('feedback_button');
+    $button_color = $button_color == '' ? '#082de8' : $button_color;
+    
+    $form['exit'] = [
+        '#type' => "container",
+    	'#prefix' => '<div class="close" style="color:'. $button_color . '">',
+    	'#suffix' => "</div>",
+    ];
+    $form['exit']['markup'] = [
+    	'#markup' => "x",
+    ];
+    $form['title'] = [
+    	 '#type' => "container",
+    	 '#prefix' => '<div class="title" style="color:'. $button_color . '">',
+    	 '#suffix' => "</div>",
+    ];
+    $form['title']['markup'] = [
+    	 '#markup' => "$form_title",
+    ];
+    $form['desc'] = [
+    	 '#type' => "container",
+    	 '#prefix' => "<div class='desc'>",
+    	 '#suffix' => "</div>",
+    ];
+    $form['desc']['markup'] = [
+    	 '#markup' => "Наш специалист свяжется с вами в ближайшее время.",
+    ];
+    $form['name'] = array(
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#attributes' => array(
+            'placeholder' => '* Имя',
+            'class' => array('rfield'),
+        ),
+    );
+    $form['phone'] = array(
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#attributes' => array(
+            'placeholder' => '* Телефон',
+            'class' => array('rfield'),
+        ),
+    );
+    $form['privat'] = [
+    	 '#type' => "container",
+    	 '#prefix' => "<div class='privat'>",
+    	 '#suffix' => "</div>",
+    ];
+    $form['privat']['markup'] = [
+    	 '#markup' => 'Нажимая кнопку "Отправить", вы соглашаетесь с <a target="_blank" href="/privacy-policy">политикой персональных данных</a>.',
+    ];
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Отправить'),
+        '#attributes' => array(
+            'style'=>'background: '.$button_color,
+        ),
+        '#ajax' => array(
+          'callback' => 'form_ajax_form_load_mail',
+          'wrapper' => 'formonsite-form',
+          'method' => 'replace',
+          'effect' => 'fade',
+        ),
+    );
+    
+    $form['markup'] = array(
+        '#prefix' => '<div id = "form-ajax-massages">',
+        '#suffix' => '</div>',
+        '#markup' => '',
+    );
+    return $form;
+}
+
+function form_ajax_form_load_mail($form, $form_state) {
+    $error = false;
+    $name = '';
+    $nameFieldset = '';
+    $phone = '';
+    $phoneFieldset = '';
+    $form_mail = variable_get('feedback_mail');
+    
+    if ((isset($form_state['values']['name'])) and ($form_state['values']['name'] != '')) {
+        $name = strip_tags($form_state['values']['name']) . "<br>";
+	    $nameFieldset = "<b>Имя пославшего:</b>";
+    } else {
+        $error = true;
+    }
+    if ((isset($form_state['values']['phone'])) and ($form_state['values']['phone'] != '')) {
+        $phone = strip_tags($form_state['values']['phone']) . "<br>";
+	    $phoneFieldset = "<b>Телефон:</b>";
+    } else {
+        $error = true;
+    }
+    $formInfo = "Сообщение с сайта компании: ".$_SERVER['HTTP_HOST'];
+	$formInfoFieldset = "<b>Тема:</b>";
+    $to = "$form_mail";
+    $sendfrom = "info@".$_SERVER['HTTP_HOST'];
+    $headers  = "From: " . strip_tags($sendfrom) . "\r\n";
+    $headers .= "Reply-To: ". strip_tags($sendfrom) . "\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html;charset=utf-8 \r\n";
+    $headers .= "Content-Transfer-Encoding: 8bit \r\n";
+    $subject = "$formInfo";
+    $message = "$nameFieldset $name
+                $phoneFieldset $phone
+                $formInfoFieldset $formInfo";
+    if ($error == false) {
+        $send = mail ($to, $subject, $message, $headers);
+        if ($send == 'true') {
+            $form['markup']['#markup'] = '<div class="messages success"><p class="shared_content">Сообщение отправлено. Спасибо.</p></div>';
+            $form['name']['#value'] = t('');
+            $form['phone']['#value'] = t('');
+        } else {           
+			$form['markup']['#markup'] = '<div class="messages error"><p class="shared_content">Сообщение не отправлено. Проблемы с сервером.</p></div>';
+        }
+    } else {
+        $form['markup']['#markup'] = '<div class="messages error"><p class="shared_content">Сообщение не отправлено. Проблемы с сервером.</p></div>';
+		$form['markup']['#markup'] = '<div class="messages error"><p class="shared_content">Сообщение не отправлено. Заполните все поля.</p></div>';
+    }
+    
+  return $form;
+}
+
+
+?>

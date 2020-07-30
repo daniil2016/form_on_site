@@ -1,0 +1,101 @@
+#formonsite-form {
+    font-family: Tahoma, serif;
+    display:none;
+    position:fixed;
+    width:100%;
+    height:100%;
+    background-color:#999;
+    background-color:rgba(0,0,0,.33);
+    top:0;left: 0;
+    z-index:999;
+}
+#formonsite-form > div{
+    display:block;
+    float:none;
+    margin:auto;
+    box-shadow:0px 0px 20px rgba(0,19,163,0.13);
+    background-color:#FFFFFF;
+    width:320px;
+    height:auto;
+    z-index:580;
+    position:absolute;
+    left:0;
+    right:0;
+    top:50%;
+    transform:translateY(-50%);
+    padding-bottom: 20px;
+}
+#formonsite-form .close {
+    color: #104bc6;
+    cursor: pointer;
+    text-align: center;
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    line-height: 23px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+#formonsite-form .title {
+    color: #104bc6;
+    font-size: 25px;
+    font-weight: 300;
+    margin-top: 60px;
+    text-align: center;
+    padding: 0 20px;
+    text-transform: uppercase;
+}
+#formonsite-form input {
+    width: 268px;
+    margin: 0 15px;
+    padding: 10px 10px;
+}
+#formonsite-form .desc {
+    position: relative;
+    padding: 0 15px;
+    text-align: center;
+    padding-bottom: 20px;
+    margin-top: 10px;
+}
+#formonsite-form .privat {
+    padding: 0 15px;
+}
+#formonsite-form input.form-submit {
+    background: #082de8;
+    border-radius: 100px;
+    border: none;
+    box-shadow: none;
+    color: #FFFFFF;
+    padding: 10px 0px;
+    position: relative;
+    font-size: 16px;
+    margin: 15px 35px 0px;
+    text-transform: uppercase;
+    width: 250px;
+    transition: 0.5s;
+}
+#formonsite-form #edit-submit:hover {
+    box-shadow: 0 0 5px #000;
+    transition: 0.5s;
+}
+#formonsite-form .messages.success {
+    padding: 0;
+    border: 0;
+    text-align: center;
+    width: 320px;
+    margin: 0;
+    position: relative;
+    display: block;
+    margin-top: 15px;
+}
+#formonsite-form .error {
+    color: #f10b0b;
+}
+#formonsite-form .success {
+    color: #4ef10b;
+}
+.pop {
+    cursor: pointer;
+    text-decoration: none;
+}
