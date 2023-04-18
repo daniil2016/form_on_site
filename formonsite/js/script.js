@@ -8,6 +8,7 @@ attach: function(context, settings) {
     $("#formonsite-form .close").click(
         function(){$('#formonsite-form').css("display","none");
     });
+    
 }
 };
 })(jQuery);
